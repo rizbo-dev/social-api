@@ -9,6 +9,8 @@ import (
 	"github.com/rizbo-dev/social-api/internal/store"
 )
 
+const version = "0.0.1"
+
 func main() {
 	err := godotenv.Load()
 
@@ -18,6 +20,7 @@ func main() {
 
 	config := config{
 		addr: env.GetString("ADDR", ":8080"),
+		env:  env.GetString("ENV", "development"),
 		db: dbConfig{
 			addr:               env.GetString("DB_ADDR", "postgres://admin:adminpassword@localhost/socialnetwork?sslmode=disable"),
 			maxOpenConnections: env.GetInt("DB_MAX_OPEN_CONNECTIONS", 30),
