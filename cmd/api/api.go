@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -28,6 +29,17 @@ type dbConfig struct {
 	maxIdleTime        string
 }
 
+func parseIdFromUrl(targetKey string, r *http.Request) (int64, error) {
+	idParam := chi.URLParam(r, targetKey)
+	id, err := strconv.ParseInt(idParam, 10, 64)
+
+	if err != nil {
+		return 0, err
+	}
+
+	return id, nil
+}
+
 func (app *application) mount() http.Handler {
 	r := chi.NewRouter()
 
@@ -45,7 +57,10 @@ func (app *application) mount() http.Handler {
 			r.Post("/", app.createPostHandler)
 
 			r.Route("/{postID}", func(r chi.Router) {
+				r.Use(app.postsContextMiddleware)
 				r.Get("/", app.getPostHandler)
+				r.Delete("/", app.deletePostHandler)
+				r.Patch("/", app.patchPostHandler)
 			})
 		})
 	})
